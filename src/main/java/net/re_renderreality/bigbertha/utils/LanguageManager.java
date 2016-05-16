@@ -64,7 +64,7 @@ public class LanguageManager {
 			}
 			catch (Exception ex) {ex.printStackTrace();}
 		}
-		BigBertha.INSTANCE.getLogger().info("The following languages were loaded successfully: " + languages.keySet());
+		Reference.logger.info("The following languages were loaded successfully: " + languages.keySet());
 	}
 	
 	/**

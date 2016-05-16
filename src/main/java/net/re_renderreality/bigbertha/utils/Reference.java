@@ -3,6 +3,10 @@ package net.re_renderreality.bigbertha.utils;
 import java.io.File;
 import java.util.Date;
 
+import org.apache.logging.log4j.Logger;
+
+import net.re_renderreality.bigbertha.BigBertha;
+import net.minecraft.command.ICommandSender;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
@@ -33,6 +37,9 @@ public final class Reference {
 	/** @return the directory where the mod saves server player data */
 	public static final File getSettingsDirServer() {return Reference.INSTANCE.SETTINGS_DIR_SERVER;}
 	
+	/** @return the serverLogger */
+	public static Logger logger;
+	
 	private static Reference INSTANCE;
 	
 	private final File SETTINGS_DIR_SERVER;
@@ -52,5 +59,14 @@ public final class Reference {
 	 */
 	public static final void init(FMLPreInitializationEvent event) {
 		if (INSTANCE == null) Reference.INSTANCE = new Reference(event);
+		
+		if (logger == null) Reference.logger = event.getModLog();
+	}
+	
+	/**
+	 * @return The current language
+	 */
+	public static String getCurrentLang(ICommandSender sender) {
+		return BigBertha.proxy.getLang(sender);
 	}
 }

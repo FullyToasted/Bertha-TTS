@@ -18,6 +18,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
+import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -41,6 +42,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.re_renderreality.bigbertha.BigBertha;
 import net.re_renderreality.bigbertha.events.EventListenerCore.EventListener;
 import net.re_renderreality.bigbertha.events.EventListenerCore.TwoEventListener;
+import net.re_renderreality.bigbertha.utils.Reference;
 
 /**
  * A generic event handler class for all events extending {@link Event} <br>
@@ -50,6 +52,7 @@ import net.re_renderreality.bigbertha.events.EventListenerCore.TwoEventListener;
  * @author MrNobody98
  */
 public class EventHandler<T extends Event> {
+	public static final ForgeEventHandler<ServerChatEvent>             CHAT = new ForgeEventHandler<ServerChatEvent>(MinecraftForge.EVENT_BUS, ServerChatEvent.class, false);
 	public static final ForgeEventHandler<LivingAttackEvent>           ATTACK = new ForgeEventHandler<LivingAttackEvent>(MinecraftForge.EVENT_BUS, LivingAttackEvent.class, false);
 	public static final ForgeEventHandler<TickEvent>                   TICK = new ForgeEventHandler<TickEvent>(MinecraftForge.EVENT_BUS, TickEvent.class, false);
 	public static final ForgeEventHandler<LivingSetAttackTargetEvent>  SET_TARGET = new ForgeEventHandler<LivingSetAttackTargetEvent>(MinecraftForge.EVENT_BUS, LivingSetAttackTargetEvent.class, false);
@@ -129,7 +132,7 @@ public class EventHandler<T extends Event> {
 		for (EventHandler handler : defaultHandlers)
 			if (handler instanceof ForgeEventHandler && (allowClientSide || !handler.isClientOnly()))
 				if (!ForgeEventHandler.registerForgeHandler((ForgeEventHandler) handler, mod)) 
-					BigBertha.INSTANCE.getLogger().warn("Could not register EventHandler for Event " + handler.getEventClass().getName());
+					Reference.logger.warn("Could not register EventHandler for Event " + handler.getEventClass().getName());
 	}
 	
 	/**
