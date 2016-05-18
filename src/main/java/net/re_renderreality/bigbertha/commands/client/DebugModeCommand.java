@@ -1,4 +1,4 @@
-package net.re_renderreality.bigbertha.commands;
+package net.re_renderreality.bigbertha.commands.client;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.text.TextComponentString;
@@ -10,6 +10,7 @@ import net.re_renderreality.bigbertha.commands.backend.ClientCommandInterface;
 import net.re_renderreality.bigbertha.commands.backend.CommandBase;
 import net.re_renderreality.bigbertha.commands.backend.CommandException;
 import net.re_renderreality.bigbertha.commands.backend.CommandRequirement;
+import net.re_renderreality.bigbertha.commands.backend.MultipleCommands;
 import net.re_renderreality.bigbertha.commands.backend.StandardCommand;
 import net.re_renderreality.bigbertha.utils.Logging;
 import net.re_renderreality.bigbertha.wrapper.CommandSender;
@@ -55,16 +56,16 @@ public class DebugModeCommand extends StandardCommand implements ClientCommandIn
 	private String[] getInfo(ClientCommand<?> cmd) {
 		StandardCommand delegate = cmd.getDelegate();
 		
-		/*
-		if (delegate instanceof MultipleCommands && delegate.getClass().isAnnotationPresent(Command.MultipleCommand.class)) {
+		
+		if (delegate instanceof MultipleCommands && delegate.getClass().isAnnotationPresent(CommandBase.MultipleCommand.class)) {
 			MultipleCommands command = (MultipleCommands) delegate;
-			Command.MultipleCommand info = delegate.getClass().getAnnotation(Command.MultipleCommand.class);
+			CommandBase.MultipleCommand info = delegate.getClass().getAnnotation(CommandBase.MultipleCommand.class);
 			
 			try {return new String[] {info.name()[command.getTypeIndex()], info.description()[command.getTypeIndex()],
 				info.syntax()[command.getTypeIndex()], info.example()[command.getTypeIndex()], info.videoURL()[command.getTypeIndex()]};}
 			catch (ArrayIndexOutOfBoundsException ex) {return null;}
 		}
-		else */
+		else 
 		if (delegate.getClass().isAnnotationPresent(CommandBase.class)) {
 			CommandBase info = delegate.getClass().getAnnotation(CommandBase.class);
 			return new String[] {info.name(), info.description(), info.syntax(), info.example(), info.videoURL()};

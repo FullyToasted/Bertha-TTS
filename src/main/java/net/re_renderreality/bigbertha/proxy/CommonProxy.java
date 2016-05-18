@@ -1,6 +1,7 @@
 package net.re_renderreality.bigbertha.proxy;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.List;
 
 import net.minecraft.command.ICommandSender;
@@ -9,14 +10,24 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.re_renderreality.bigbertha.BigBertha;
 import net.re_renderreality.bigbertha.BigBertha.ServerType;
+import net.re_renderreality.bigbertha.commands.backend.MultipleCommands;
+import net.re_renderreality.bigbertha.commands.backend.ServerCommand;
+import net.re_renderreality.bigbertha.commands.backend.StandardCommand;
 import net.re_renderreality.bigbertha.events.EventHandler;
 import net.re_renderreality.bigbertha.utils.Reference;
 import net.re_renderreality.bigbertha.utils.SettingsManager;
+import net.re_renderreality.bigbertha.utils.Updater;
+import net.re_renderreality.bigbertha.utils.GlobalSettings;
 import net.re_renderreality.bigbertha.utils.NBTSettingsManager;
 
 public class CommonProxy {
@@ -77,22 +88,6 @@ public class CommonProxy {
 	}
 	
 	/**
-	 * Called from the main mod class to handle the server start
-	 */
-	protected void serverInit(FMLServerStartingEvent event) {
-		//this.patcher.applyModStatePatch(event);
-		
-		try {
-			//this.registerServerCommands(event.getServer());
-			Reference.logger.info("Server Commands successfully registered");
-		}
-		catch (Exception ex) {Reference.logger.warn("Failed to register Server Command", ex);}
-		
-		//if (GlobalSettings.retryHandshake)
-		//	PacketHandlerServer.startHandshakeRetryThread();
-	}
-	
-	/**
 	 * Registers Event Handlers
 	 */
 	public void registerHandlers() {
@@ -107,13 +102,70 @@ public class CommonProxy {
 		Reference.logger.info("Event Handlers registered");
 	}
 	
+	/**
+	 * Called from the main mod class to do pre initialization
+	 */
+	public void preInit(FMLPreInitializationEvent event) {
+		
+	}
+	
+	/**
+	 * Called from the main mod class to do initialization
+	 */
+	public void init(FMLInitializationEvent event) {
+		if (GlobalSettings.searchUpdates) findMoreCommandsUpdates();
+	}
+	
+	/**
+	 * Called from the main mod class to handle the server start
+	 */
+	public void serverInit(FMLServerStartingEvent event) {
+		try {
+			this.registerServerCommands(event.getServer());
+			Reference.logger.info("Server Commands successfully registered");
+		}
+		catch (Exception ex) {Reference.logger.warn("Failed to register Server Command", ex);}
+	}
+	
+	/**
+	 * Starts a thread looking for MoreCommands updates
+	 */
+	private void findMoreCommandsUpdates() {
+		Reference.logger.info("Searching for MoreCommands updates");
+		
+		new Thread(new Updater(Loader.MC_VERSION, new Updater.UpdateCallback() {
+			@Override
+			public void udpate(String version, String website, String download) {
+				TextComponentString text = new TextComponentString(Reference.VERSION.equals(version) ? 
+						"BigBertha update for this version found " : "new BigBertha version found: "); 
+				text.getChatStyle().setColor(TextFormatting.BLUE);
+				TextComponentString downloadVersion = new TextComponentString(version); downloadVersion.getChatStyle().setColor(TextFormatting.YELLOW);
+				TextComponentString homepage = new TextComponentString("Minecraft Forum"); homepage.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, website)).setColor(TextFormatting.GREEN).setItalic(true).setUnderlined(true);
+				TextComponentString downloadPage = new TextComponentString("Download"); downloadPage.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, download)).setColor(TextFormatting.GREEN).setItalic(true).setUnderlined(true);
+				TextComponentString comma = new TextComponentString(", "); comma.getChatStyle().setColor(TextFormatting.DARK_GRAY);
+				TextComponentString sep = new TextComponentString(" - "); sep.getChatStyle().setColor(TextFormatting.DARK_GRAY);
+				
+				String rawText = text.getUnformattedText() + (Reference.VERSION.equals(version) ? "" : downloadVersion.getUnformattedText()) + " - " + website + ", " + download;
+				if (!Reference.VERSION.equals(version)) text.appendSibling(downloadVersion);
+				text.appendSibling(sep).appendSibling(homepage).appendSibling(comma).appendSibling(downloadPage);
+				
+				Reference.logger.info(rawText);
+				CommonProxy.this.updateText = text;
+				
+				if (BigBertha.proxy instanceof ClientProxy && net.minecraft.client.Minecraft.getMinecraft().thePlayer != null) {
+					CommonProxy.this.playerNotified = true;
+					net.minecraft.client.Minecraft.getMinecraft().thePlayer.addChatMessage(text);
+				}
+			}
+		}), "MoreCommands Update Thread").start();
+	}
+	
 	
 	/**
 	 * Registers all server commands
 	 * 
 	 * @return Whether the server commands were registered successfully
 	 */
-	/*
 	private void registerServerCommands(MinecraftServer server) throws Exception {
 		List<Class<? extends StandardCommand>> serverCommands = this.mod.getServerCommandClasses();
 		if (serverCommands == null) throw new RuntimeException("Server Command Classes not loaded");
@@ -134,11 +186,11 @@ public class CommonProxy {
 					commandManager.registerCommand(new ServerCommand(ServerCommand.upcast(cmd)));
 			}
 			catch (Exception ex) {
-				this.mod.getLogger().warn("Skipping Server Command " + cmdClass.getName() + " due to the following exception during loading", ex);
+				Reference.logger.warn("Skipping Server Command " + cmdClass.getName() + " due to the following exception during loading", ex);
 			}
 		}
 	}
-	*/
+	
 	
 	/**
 	 * Creates a {@link SettingsManager} for a player
