@@ -1,4 +1,4 @@
-package net.re_renderreality.bigbertha.tts;
+package net.re_renderreality.bigbertha.text2speech;
 
 import com.sun.speech.freetts.Voice;
 import com.sun.speech.freetts.VoiceManager;
@@ -45,9 +45,9 @@ public class TextToSpeech{
 		// TODO: Make this interchangeable
 		// This sets the voice to use for playback 
 		// There are three options: "kevin" (low quality), "kevin16" (medium quality), and "alan" (high quality, requires additional code)
-     String voiceName = "kevin16";
+		String voiceName = "kevin16";
      
-     // This instantializes the voiceManager
+		// This instantializes the voiceManager
 		VoiceManager voiceManager = VoiceManager.getInstance();
 		// This gets the specified voice from the voiceManager
 		Voice voice = voiceManager.getVoice(voiceName);
