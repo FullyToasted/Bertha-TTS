@@ -8,6 +8,6 @@ public class CommonProxy {
     }
 
     public void registerEventHandlers() {
-    	 MinecraftForge.EVENT_BUS.register(new ServerChatEventListener());
+    	 //MinecraftForge.EVENT_BUS.register(new ServerChatEventListener());
     }
 }
