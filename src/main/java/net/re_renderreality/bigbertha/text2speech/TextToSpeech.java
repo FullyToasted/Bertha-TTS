@@ -31,12 +31,14 @@ public class TextToSpeech{
  		 	
      		// This part actually reads the text
      		voice.startBatch();
+     		BigBertha.logger.info("Attempting Speech!");
      		voice.speak(text);
      		voice.endBatch();
      		
      		// Deallocate the data
      		voice.deallocate();
          } catch (Exception e) { }
+         BigBertha.logger.info("Speech Failed!");
      }
  }
 	

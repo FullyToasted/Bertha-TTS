@@ -48,6 +48,7 @@ mainHand:right
 attackIndicator:0
 showSubtitles:true
 realmsNotifications:true
+enableWeakAttacks:false
 key_key.attack:-100
 key_key.use:-99
 key_key.forward:17

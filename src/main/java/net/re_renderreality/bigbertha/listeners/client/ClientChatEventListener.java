@@ -10,5 +10,7 @@ public class ClientChatEventListener {
 	@SubscribeEvent
     public void onClientChatEvent(ServerChatEvent event){
 		BigBertha.logger.info(event.getMessage());
-    }
+		TextToSpeech speech = new TextToSpeech();
+		speech.speakText(event.getMessage(), TextToSpeech.getMaleVoice());
+	}
 }
