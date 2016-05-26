@@ -5,7 +5,7 @@ import com.sun.speech.freetts.VoiceManager;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.SoundCategory;
-import net.re_renderreality.bigbertha.BigBertha;
+import net.re_renderreality.bigbertha.BerthaTTS;
 
 //Import freeTTS for TTS capability
 
@@ -31,14 +31,14 @@ public class TextToSpeech{
  		 	
      		// This part actually reads the text
      		voice.startBatch();
-     		BigBertha.logger.info("Attempting Speech!");
+     		BerthaTTS.logger.info("Attempting Speech!");
      		voice.speak(text);
      		voice.endBatch();
      		
      		// Deallocate the data
      		voice.deallocate();
          } catch (Exception e) { }
-         BigBertha.logger.info("Speech Failed!");
+         BerthaTTS.logger.info("Speech Failed!");
      }
  }
 	
@@ -62,7 +62,7 @@ public class TextToSpeech{
 	{
 		parseText(text);
 		this.voice = voice;
-		BigBertha.logger.info(Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.VOICE));
+		BerthaTTS.logger.info(Minecraft.getMinecraft().gameSettings.getSoundLevel(SoundCategory.VOICE));
 		
 		Thread t = new Thread(new TextReader());
 		t.start();
